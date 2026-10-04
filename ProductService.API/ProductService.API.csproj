@@ -10,6 +10,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="Elven.Observability.Instrumentation.EntityFrameworkCore" Version="0.1.13" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.31" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.31">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
