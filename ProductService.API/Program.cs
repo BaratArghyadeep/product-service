@@ -20,7 +20,6 @@ builder.Services.AddDbContext<ProductDbContext>(
 builder.Services.AddScoped<
     IProductRepository,
     ProductRepository>();
-var app = builder.Build();
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource =>
         resource.AddService("ProductService"))
@@ -35,6 +34,8 @@ builder.Services.AddOpenTelemetry()
                     new Uri("http://jaeger:4317");
             });
     });
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
