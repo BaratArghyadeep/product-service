@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductService.Application.Interfaces;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource =>
         resource.AddService("ProductService"))
+
     .WithTracing(tracing =>
     {
         tracing
@@ -36,6 +38,14 @@ builder.Services.AddOpenTelemetry()
                 options.Endpoint =
                     new Uri("http://jaeger:4317");
             });
+    })
+
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddPrometheusExporter();
     });
 var jwtKey = builder.Configuration["Jwt:Key"];
 
@@ -83,5 +93,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();
