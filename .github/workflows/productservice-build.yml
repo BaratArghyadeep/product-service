@@ -34,3 +34,21 @@ jobs:
       run: |
         docker push \
         ${{ secrets.ACR_LOGIN_SERVER }}/productservice:latest
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v4
+
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+
+    - name: Update ProductService Deployment
+      run: |
+        kubectl set image deployment/productservice \
+        productservice=ecommerceacrbarat.azurecr.io/productservice:latest \
+        -n ecommerce
+
+    - name: Verify Rollout
+      run: |
+        kubectl rollout status deployment/productservice \
+        -n ecommerce
