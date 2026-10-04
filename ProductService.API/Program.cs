@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ProductService.Application.Interfaces;
 using ProductService.Infrastructure.DBContext;
 using ProductService.Infrastructure.Repository;
@@ -19,7 +21,20 @@ builder.Services.AddScoped<
     IProductRepository,
     ProductRepository>();
 var app = builder.Build();
-
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource =>
+        resource.AddService("ProductService"))
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation()
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint =
+                    new Uri("http://jaeger:4317");
+            });
+    });
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
